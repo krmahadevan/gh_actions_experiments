@@ -1,0 +1,22 @@
+name: Run CI for python tests
+
+on: push
+
+jobs:
+  first_job:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout codebase
+      uses: actions/checkout@v4
+    - name: Setup python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+    - name: Init virtual environment
+      run: source .venv/bin/activate
+    - name: Upgrade pip
+      run: pip install --upgrade pip
+    - name: Resolve dependencies
+      run: pip install -r requirements.txt
+    - name: Run tests
+      run: pytest
