@@ -28,5 +28,5 @@ jobs:
         if-no-files-found: warn
         name: pytest-test-results
         artifact-id: pytest-test-results
-        path: results/
+        path: esults/report.html
 
