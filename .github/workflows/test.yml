@@ -1,6 +1,6 @@
 name: Run CI for python tests
 
-on: push
+on: workflow_dispatch #Run this only manually
 
 jobs:
   first_job:
