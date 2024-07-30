@@ -34,7 +34,7 @@ jobs:
           python -m pip install -r requirements.txt
       - name: Saved cached virtualenv
         uses: actions/cache/save@v4
-        if: steps.cache.outputs.cache-hit != 'true' # Save into cache only if the restore failed
+        if: steps.restore_cache.outputs.cache-hit != 'true' # Save into cache only if the restore failed
         with:
           key: ${{ env.KEY }}
           path: .venv # Cache the .venv directory
