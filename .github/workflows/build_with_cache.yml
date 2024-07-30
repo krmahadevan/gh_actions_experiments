@@ -24,8 +24,7 @@ jobs:
       - name: Restore cached virtualenv # Try restoring from cache if it's available
         uses: actions/cache/restore@v4
         with:
-          key: KEY
-          # Cache the .venv directory
+          key: ${{ env.KEY }}
           path: .venv
       - name: setup dependencies
         run: |
@@ -35,5 +34,5 @@ jobs:
       - name: Saved cached virtualenv
         uses: actions/cache/save@v4
         with:
-          key: KEY
-          path: .venv
+          key: ${{ env.KEY }}
+          path: .venv # Cache the .venv directory
