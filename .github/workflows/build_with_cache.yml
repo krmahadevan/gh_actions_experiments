@@ -5,7 +5,7 @@ on:
   - workflow_dispatch
 
 env:
-  KEY: ""
+  CACHE_KEY: ""
 
 jobs:
   python_build_job:
@@ -20,12 +20,12 @@ jobs:
       - name: Compute key for cache
         run: |
           # The key would be venv-ubuntu-3.23-<ShaIdOfRequirementsTxtFileGoesHere>
-          echo "KEY=venv-$RUNNER_OS-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}" >> $GITHUB_ENV 
+          echo "CACHE_KEY=venv-$RUNNER_OS-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}" >> $GITHUB_ENV
       - name: Restore cached virtualenv # Try restoring from cache if it's available
         id: restore_cache
         uses: actions/cache/restore@v4
         with:
-          key: ${{ env.KEY }}
+          key: ${{ env.CACHE_KEY }}
           path: .venv
       - name: setup dependencies
         run: |
@@ -36,5 +36,5 @@ jobs:
         uses: actions/cache/save@v4
         if: steps.restore_cache.outputs.cache-hit != 'true' # Save into cache only if the restore failed
         with:
-          key: ${{ env.KEY }}
+          key: ${{ env.CACHE_KEY }}
           path: .venv # Cache the .venv directory
