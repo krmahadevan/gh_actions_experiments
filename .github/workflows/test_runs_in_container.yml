@@ -13,12 +13,12 @@ jobs:
 #      uses: actions/setup-python@v5
 #      with:
 #        python-version: 3.12
-    - name: Setup virtual environment
-      run: python -m venv .venv
-    - name: Init virtual environment
-      run: source .venv/bin/activate
-    - name: Upgrade pip
-      run: pip install --upgrade pip
+#    - name: Setup virtual environment
+#      run: python -m venv .venv
+#    - name: Init virtual environment
+#      run: source .venv/bin/activate
+#    - name: Upgrade pip
+#      run: pip install --upgrade pip
     - name: Resolve dependencies
       run: pip install -r requirements.txt
     - name: Run tests
