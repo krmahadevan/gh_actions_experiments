@@ -1,4 +1,4 @@
-name: Run CI for python tests
+name: Run Python CI on Docker container
 
 on: workflow_dispatch #Run this only manually
 

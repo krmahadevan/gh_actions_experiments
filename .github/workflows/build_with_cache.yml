@@ -1,7 +1,7 @@
 # Refer https://adamj.eu/tech/2023/11/02/github-actions-faster-python-virtual-environments/ for more details
 name: Python-Build-With-Cache
 on:
-  - push
+#  - push
   - workflow_dispatch
 
 env:
