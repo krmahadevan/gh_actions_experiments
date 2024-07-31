@@ -9,6 +9,9 @@ jobs:
     steps:
     - name: Checkout codebase
       uses: actions/checkout@v4
+# Since we are now going to be running our python tests from within a docker container which comes pre-baked with
+# python installations etc., we don't need to setup python, we dont need to create a virtual environment and activate it
+# because our isolation levels are now at a container level. So below stuff is all commented out
 #    - name: Setup python
 #      uses: actions/setup-python@v5
 #      with:
