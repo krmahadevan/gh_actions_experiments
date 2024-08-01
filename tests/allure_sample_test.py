@@ -13,8 +13,22 @@ def test_allure_simple_test():
     with allure.step("Simple parent step"):
         with allure.step("Simple child step"):
             pass
+    simple_step_func("function parameter")
+
+
+@allure.id(2)
+@allure.story("Simple story")
+@allure.title("test_allure_simple_test displayName")
+def test_allure_simple_failing_test():
+    with allure.step("Simple step"):
+        pass
+
+    with allure.step("Simple parent step"):
+        with allure.step("Simple child step"):
+            pass
 
     simple_step_func("function parameter")
+    assert False
 
 
 @allure.step("Simple function with step decorator")
