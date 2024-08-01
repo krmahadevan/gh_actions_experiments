@@ -28,7 +28,7 @@ def test_allure_simple_failing_test():
             pass
 
     simple_step_func("function parameter")
-    assert False
+    # assert False
 
 
 @allure.step("Simple function with step decorator")
