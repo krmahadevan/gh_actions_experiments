@@ -1,3 +1,4 @@
 pytest
 pytest-html
 pytest-dependency
+flake8>=3.8.3
