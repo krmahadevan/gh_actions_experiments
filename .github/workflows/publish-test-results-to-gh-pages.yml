@@ -1,9 +1,6 @@
 name: allure-python-pytest
 
-on:
-  push:
-    branches-ignore:
-      - '!master'
+on: [ workflow_dispatch ]
 
 permissions:
   contents: write
@@ -35,7 +32,7 @@ jobs:
 
       - name: Run Test
         if: always()
-        run: pytest --alluredir=allure-results
+        run: pytest --alluredir=allure-results tests/allure_sample_test.py
         continue-on-error: true
 
       - name: Get Allure history
