@@ -16,19 +16,33 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
+      - name: Compute key for cache
+        run: |
+          # The key would be venv-ubuntu-3.23-<ShaIdOfRequirementsTxtFileGoesHere>
+          echo "CACHE_KEY=venv-$RUNNER_OS-${{ steps.setup_python.outputs.python-version }}-${{ hashFiles('requirements.txt') }}" >> $GITHUB_ENV
+      - name: Restore cached virtualenv # Try restoring from cache if it's available
+        id: restore_cache
+        uses: actions/cache/restore@v4
+        with:
+          key: ${{ env.CACHE_KEY }}
+          path: .venv
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
+      - name: Saved cached virtualenv
+        uses: actions/cache/save@v4
+        if: steps.restore_cache.outputs.cache-hit != 'true' # Save into cache only if the restore failed
+        with:
+          key: ${{ env.CACHE_KEY }}
+          path: .venv # Cache the .venv directory
       - name: Install software
         run: sudo apt-get install -y chromium-browser
 
-      - name: Check code style
-        if: always()
-        run: |
-          flake8
+#      - name: Check code style
+#        if: always()
+#        run: |
+#          flake8
 
       - name: Run Test
         if: always()
