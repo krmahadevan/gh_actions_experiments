@@ -1,0 +1,64 @@
+name: Caching-Experiments
+
+on:
+  workflow_dispatch:
+
+env:
+  version: 2.30.0
+
+jobs:
+  implement-caching:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11 for x64
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Read from cache
+        id: cache-read
+        uses: actions/cache/restore@v3
+        with:
+            path: ${{ github.workspace }}/allure-cli
+            key: ${{ runner.os }}-allure-cli
+
+      - name: Use allure-binary from cache
+        if: steps.cache-read.outputs.cache-hit == 'true'
+        run: |
+          echo "Found the allure cli binary in the cache"
+          ${{ github.workspace }}/allure-cli/allure-${{ env.version }}/bin/allure --version
+
+      - name: Download binary from internet
+        if: steps.cache-read.outputs.cache-hit != 'true'
+        run: |
+          mvn_base=https://repo1.maven.org/maven2
+          mvn -Ddownload.outputDirectory=. \
+          -Ddownload.url=$mvn_base/io/qameta/allure/allure-commandline/$version/allure-commandline-${{ env.version }}.tgz \
+          -Ddownload.outputFileName=allure-commandline \
+          com.googlecode.maven-download-plugin:download-maven-plugin:1.9.0:wget
+          echo "[DEBUG] Binary downloaded from the net"
+
+          cli_dir=${{ github.workspace }}/allure-cli
+          mkdir -p $cli_dir
+
+          tar -xvf allure-commandline -C $cli_dir
+          echo "[DEBUG] Allure CLI has been untarred to " $cli_dir
+          ls -ltr $cli_dir
+
+          location=$cli_dir/allure-$version/bin/allure
+
+          chmod +x $location
+          echo "[DEBUG] Added execution permission to binary"
+
+          $location --version
+
+      - name: Push binary back to cache
+        if: steps.cache-read.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        with:
+            path: ${{ github.workspace }}/allure-cli
+            key: ${{ runner.os }}-allure-cli
