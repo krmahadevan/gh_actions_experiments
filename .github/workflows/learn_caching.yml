@@ -6,6 +6,9 @@ on:
 env:
   version: 2.30.0
 
+permissions:
+  contents: write
+
 jobs:
   implement-caching:
     runs-on: ubuntu-latest
@@ -49,7 +52,7 @@ jobs:
           echo "[DEBUG] Allure CLI has been untarred to " $cli_dir
           ls -ltr $cli_dir
 
-          location=$cli_dir/allure-$version/bin/allure
+          location=$cli_dir/allure-${{ env.version }}/bin/allure
 
           chmod +x $location
           echo "[DEBUG] Added execution permission to binary"
@@ -62,3 +65,77 @@ jobs:
         with:
             path: ${{ github.workspace }}/allure-cli
             key: ${{ runner.os }}-allure-cli
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Test
+        if: always()
+        run: pytest --alluredir=allure-results tests/allure_sample_test.py
+        continue-on-error: true
+
+      - name: Get Allure history
+        uses: actions/checkout@v2
+        if: always()
+        continue-on-error: true
+        with:
+            ref: gh-pages
+            path: allure-run-results
+
+      - name: Generate reports
+        if: always()
+        run: |
+
+          local_dir=${{ github.workspace }}/allure-run-results
+          if [ -d "$local_dir" ]; then
+            cd $local_dir
+            echo "[DEBUG] List contents of " $local_dir
+            ls -ltr $local_dir
+            result=$([ "$(ls -A)" ] && ls -d */ || echo "EMPTY")
+            if [ "$result" != "EMPTY" ]; then
+              largest_dir=$(ls -d */ | sed 's/\/$//' | sort -n | tail -n 1)
+              cd $largest_dir
+              cp -r history ${{ github.workspace }}/allure-results
+            else
+              echo "[DEBUG] " $local_dir " is empty"
+            fi
+          else
+            echo "[DEBUG] " $local_dir " does not exist"
+          fi
+
+          cli=${{ github.workspace }}/allure-cli/allure-${{ env.version }}/bin/allure
+
+          echo "[DEBUG] Generating the reports"
+          destination=$local_dir/${{ github.run_number }}
+          mkdir -p $destination
+          $cli generate ${{ github.workspace }}/allure-results -o $destination --clean
+
+          echo "[DEBUG] Completed generating reports in " $destination
+
+          html_content='<!DOCTYPE html><html lang="en">
+          <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="refresh" content="0;url=${{ github.run_number }}/index.html">
+          <title>Redirecting...</title>
+          </head>
+          </body>
+          </html>'
+
+          # Write the content to an HTML file
+          echo "$html_content" > ${{ github.workspace }}/allure-run-results/index.html
+
+      - name: Deploy report to Github Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          PERSONAL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH_BRANCH: gh-pages
+          PUBLISH_DIR: ./allure-run-results
+
+
