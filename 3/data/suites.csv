@@ -1,0 +1,3 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","1","test_allure_simple_test displayName","tests","Thu Aug 08 06:17:08 UTC 2024","passed","Thu Aug 08 06:17:08 UTC 2024","","allure_sample_test","",""
+"","1","test_allure_simple_test displayName","tests","Thu Aug 08 06:17:08 UTC 2024","passed","Thu Aug 08 06:17:08 UTC 2024","","allure_sample_test","",""
